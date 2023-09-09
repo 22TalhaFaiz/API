@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Libary</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.min.js"
+        integrity="sha512-fHY2UiQlipUq0dEabSM4s+phmn+bcxSYzXP4vAXItBvBHU7zAM/mkhCZjtBEIJexhOMzZbgFlPLuErlJF2b+0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css"
+        integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .btn-secondary {
+            background-color: #000;
+            color: #fff;
+        }
+
+
+        .btn-primary {
+            background-color: #000;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body class="bg-black">
+
+    <div class="header">
+        <h1 class="bg-black">Movie Library</h1>
+        <div class="background-image">
+            <img src="images/wp.png" class="" alt="">
+            <div class="search-bar">
+                <input type="text" id="input" placeholder="Search for a movie">
+                <button id="search">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="movie-list">
+        <div class="container">
+            <div class="row" id="row">
+                
+                    
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img class="card-img-top modal-image" src="" alt="Card image cap">
+                    <p class="modal-p"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Watch Here!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#input").on('keydown', function (e) {
+            if (e.keyCode == 13) {
+                $("#search").click();
+            }
+        })
+        $("#search").click(function () {
+            $("#row").html('');
+            input = $("#input").val();
+            const url = `http://www.omdbapi.com/?s=${input}&apikey=cf0586a7`;
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "JSON",
+                success: function (accept) {
+                    for (i of accept.Search) {
+                        $("#row").append(`
+                        <div class="col-4">
+                        <div class="card g-5 m-2 mt-2 bg-dark text-white" style="width: 18rem;">
+                        <img src="${i.Poster}" class="card-img-top" alt="">
+                         <div class="card-body">
+                        <h5 class="card-title">${i.Title}</h5>
+                        <p class="card-text">${i.Year}</p>
+                        <button data-bs-toggle="modal" id='${i.imdbID}'data-bs-target="#exampleModal" onclick="detail(this)" class="btn btn-primary">Watch Here</button>
+                        </div>
+                        </div>
+                        </div>`
+
+                        )
+                    }
+                },
+                error: function (accept) {
+                    console.log(accept)
+                }
+            })
+
+        })
+        function detail(e) {
+            console.log(e.id);
+            const url = `http://www.omdbapi.com/?i=${e.id}&apikey=cf0586a7`;
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "JSON",
+                success: function (accept) {
+                    $(".modal-image").attr('src', accept.Poster);
+                    $(".modal-title").text(accept.Title);
+                    $(".modal-p").text(accept.Plot);
+                },
+
+                error: function (accept) {
+                    console.log(accept)
+                }
+            })
+
+        }
+    </script>
+</body>
+
+</html>
